@@ -1,18 +1,24 @@
 import "./List.css";
 import TodoItem from "./TodoItem";
-import { useState, useMemo, useContext } from "react";
+import { useState, useMemo, useContext, ChangeEvent } from "react";
 import { TodoStateContext } from "../App";
+import { Todo } from "../types";
 
 const List = () => {
   const todos = useContext(TodoStateContext);
   // 원래 객체로 todos를 뭉쳐서 가져와서 구조분해 할당을 했지만 props로 todos 자체를 보내고있어서 todos는 배열임
   // console.log(Array.isArray(todos));  ==> true
-  const [search, setSearch] = useState("");
-  const onChangeSearch = (e) => {
+
+  if (!todos) {
+    throw new Error("TodoStateContext must be used within a TodoStateProvider");
+  }
+  const [search, setSearch] = useState<string>("");
+
+  const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
-  const getFilteredDate = () => {
+  const getFilteredDate = (): Todo[] => {
     if (search === "") {
       return todos;
     }

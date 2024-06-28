@@ -1,26 +1,38 @@
 import "./Editor.css";
-import { useState, useRef, useContext } from "react";
+import {
+  useState,
+  useRef,
+  useContext,
+  ChangeEvent,
+  KeyboardEvent,
+  RefObject,
+} from "react";
 import { TodoDispatchContext } from "../App";
 
 const Editor = () => {
-  const { onCreate } = useContext(TodoDispatchContext);
-
-  const [content, setContent] = useState("");
-  const ref = useRef();
-  const onChangeContent = (e) => {
+  const context = useContext(TodoDispatchContext);
+  if (!context) {
+    throw new Error(
+      "TodoDispatchContext must be used within a TodoDispatchProvider"
+    );
+  }
+  const { onCreate } = context;
+  const [content, setContent] = useState<string>("");
+  const ref = useRef<HTMLInputElement>(null);
+  const onChangeContent = (e: ChangeEvent<HTMLInputElement>) => {
     setContent(e.target.value);
   };
 
   const onSubmit = () => {
     if (content === "") {
-      ref.current.focus();
+      ref.current?.focus();
       return;
     }
     onCreate(content);
     setContent("");
   };
 
-  const onKeydown = (e) => {
+  const onKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.keyCode === 13) {
       onSubmit();
     }

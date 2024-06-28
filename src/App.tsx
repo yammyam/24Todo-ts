@@ -11,8 +11,15 @@ import {
 import Header from "./components/Header";
 import Editor from "./components/Editor";
 import List from "./components/List";
+import { Todo } from "./types";
 
-function reducer(state, action) {
+type Action =
+  | { type: "INIT"; data: Todo[] }
+  | { type: "CREATE"; data: Todo }
+  | { type: "UPDATE"; targetId: number }
+  | { type: "DELETE"; targetId: number };
+
+function reducer(state: Todo[], action: Action): Todo[] {
   let nextState;
 
   switch (action.type) {
@@ -38,8 +45,15 @@ function reducer(state, action) {
   return nextState;
 }
 
-export const TodoStateContext = createContext();
-export const TodoDispatchContext = createContext();
+export const TodoStateContext = createContext<Todo[] | undefined>(undefined);
+export const TodoDispatchContext = createContext<
+  | {
+      onCreate: (content: string) => void;
+      onUpdate: (targetId: number) => void;
+      onDelete: (targetId: number) => void;
+    }
+  | undefined
+>(undefined);
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -67,7 +81,7 @@ function App() {
     setIsLoading(false);
   }, []);
 
-  const onCreate = useCallback((content) => {
+  const onCreate = useCallback((content: string) => {
     dispatch({
       type: "CREATE",
       data: {
@@ -79,7 +93,7 @@ function App() {
     });
   }, []);
 
-  const onUpdate = useCallback((targetId) => {
+  const onUpdate = useCallback((targetId: number) => {
     // todos State값들 중에
     // targetId와 일치하는 id를 갖는 투두 아이템의 isDone 변경
     dispatch({
@@ -88,7 +102,7 @@ function App() {
     });
   }, []);
 
-  const onDelete = useCallback((targetId) => {
+  const onDelete = useCallback((targetId: number) => {
     dispatch({
       type: "DELETE",
       targetId: targetId,

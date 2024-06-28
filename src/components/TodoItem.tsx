@@ -1,8 +1,19 @@
 import "./TodoItem.css";
 import { memo, useContext } from "react";
 import { TodoDispatchContext } from "../App";
-const TodoItem = ({ id, isDone, content, date }) => {
-  const { onUpdate, onDelete } = useContext(TodoDispatchContext);
+import { Todo } from "../types";
+
+interface TodoItemProps extends Todo {}
+const TodoItem: React.FC<TodoItemProps> = ({ id, isDone, content, date }) => {
+  const context = useContext(TodoDispatchContext);
+
+  if (!context) {
+    throw new Error(
+      "TodoDispatchContext must be used within a TodoDispatchProvider"
+    );
+  }
+
+  const { onUpdate, onDelete } = context;
   const onChangeCheckbox = () => {
     onUpdate(id);
   };
